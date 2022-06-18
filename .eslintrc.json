@@ -1,0 +1,17 @@
+{
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "extends": ["airbnb-base"],
+  "parserOptions": {
+    "ecmaVersion": 9
+  },
+  "rules": {
+    "eol-last": 0,
+    "no-underscore-dangle": "off",
+    "consistent-return": "off",
+    "class-methods-use-this": "off",
+    "quotes": [2, "double"]
+  }
+}
