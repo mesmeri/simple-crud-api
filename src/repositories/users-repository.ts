@@ -17,20 +17,17 @@ class UsersRepository {
     return record;
   }
 
-  async getById(id: string): Promise<User | undefined> {
+  async getById(id: string): Promise<User> {
     const user = await this.db.getOne("id", id);
     return user;
   }
 
-  async updateUser(
-    id: string,
-    user: Omit<User, "id">
-  ): Promise<User | undefined> {
+  async updateUser(id: string, user: Omit<User, "id">): Promise<User> {
     const updatedRecord = await this.db.updateOne(id, user);
     return updatedRecord;
   }
 
-  async removeUser(id: string): Promise<string | undefined> {
+  async removeUser(id: string): Promise<string> {
     const deletedUserId = await this.db.removeOne(id);
     return deletedUserId;
   }

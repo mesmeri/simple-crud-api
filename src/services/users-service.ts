@@ -72,58 +72,70 @@ class UsersService {
     return users;
   }
 
-  public create(user: Omit<User, "id">): Promise<User> {
-    const record = this.repo.add(user);
-
-    return record;
+  public async create(user: Omit<User, "id">): Promise<User> {
+    try {
+      const record = await this.repo.add(user);
+      return record;
+    } catch {
+      throw new AppError(
+        HTTPStatusCode.INTERNAL_SERVER,
+        "Unable to save record"
+      );
+    }
   }
 
-  public getUserById(id: string): Promise<User | undefined> {
+  public async getUserById(id: string): Promise<User> {
     const isIdValid = uuid.validate(id);
 
     if (!isIdValid) {
       throw new AppError(HTTPStatusCode.BAD_REQUEST, "UUID is not valid");
     }
 
-    const user = this.repo.getById(id);
-
-    if (!user) {
+    try {
+      const user = await this.repo.getById(id);
+      return user;
+    } catch {
       throw new AppError(
         HTTPStatusCode.NOT_FOUND,
         `User with id ${id} not found`
       );
     }
-
-    return user;
   }
 
-  public update(id: string, user: Omit<User, "id">): Promise<User | undefined> {
+  public async update(id: string, user: Omit<User, "id">): Promise<User> {
     const isIdValid = uuid.validate(id);
 
     if (!isIdValid) {
       throw new AppError(HTTPStatusCode.BAD_REQUEST, "UUID is not valid");
     }
 
-    const record = this.repo.updateUser(id, user);
-
-    if (!record) {
+    try {
+      const record = this.repo.updateUser(id, user);
+      return record;
+    } catch {
       throw new AppError(
         HTTPStatusCode.NOT_FOUND,
-        "Unable to update, no such person in the database"
+        `Unable to update, no user with id ${id} in the database`
       );
     }
-
-    return record;
   }
 
-  public remove(id: string) {
+  public async remove(id: string): Promise<string> {
     const isIdValid = uuid.validate(id);
 
     if (!isIdValid) {
       throw new AppError(HTTPStatusCode.BAD_REQUEST, "UUID is not valid");
     }
 
-    return this.repo.removeUser(id);
+    try {
+      const deletedUserId = await this.repo.removeUser(id);
+      return deletedUserId;
+    } catch {
+      throw new AppError(
+        HTTPStatusCode.NOT_FOUND,
+        `Unable to delete, no user with id ${id} in the database`
+      );
+    }
   }
 }
 

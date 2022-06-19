@@ -14,44 +14,64 @@ class UsersDatabase {
     });
   }
 
-  getOne<T extends keyof User>(
-    parameter: T,
-    value: User[T]
-  ): Promise<User | undefined> {
-    return new Promise((resolve) => {
-      resolve(this.storage.find((item) => item[parameter] === value));
+  getOne<T extends keyof User>(parameter: T, value: User[T]): Promise<User> {
+    return new Promise((resolve, reject) => {
+      const user = this.storage.find((item) => item[parameter] === value);
+
+      if (user) {
+        resolve(user);
+      } else {
+        reject();
+      }
     });
   }
 
   addOne(record: Omit<User, "id">): Promise<User> {
-    return new Promise((resolve) => {
-      const storageLength = this.storage.push({ id: uuidv4(), ...record });
+    return new Promise((resolve, reject) => {
+      const id = uuidv4();
 
-      resolve(this.storage[storageLength - 1]);
+      this.storage.push({ id, ...record });
+
+      const user = this.storage.find((item) => item.id === id);
+
+      if (user) {
+        resolve(user);
+      } else {
+        reject();
+      }
     });
   }
 
-  removeOne(id: string): Promise<string | undefined> {
-    return new Promise((resolve) => {
+  removeOne(id: string): Promise<string> {
+    return new Promise((resolve, reject) => {
       const ind = this.storage.findIndex((el) => el.id === id);
 
       if (ind !== -1) {
         const removedRecordId = this.storage.splice(ind, 1)[0].id;
 
         resolve(removedRecordId);
+      } else {
+        reject();
       }
     });
   }
 
-  updateOne(id: string, record: Omit<User, "id">): Promise<User | undefined> {
-    return new Promise((resolve) => {
+  updateOne(id: string, record: Omit<User, "id">): Promise<User> {
+    return new Promise((resolve, reject) => {
       const ind = this.storage.findIndex((el) => el.id === id);
 
       if (ind !== -1) {
         const updatedRecord = { ...record, id };
+
         this.storage.splice(ind, 1, updatedRecord);
 
-        resolve(this.storage.find((el) => el.id === id));
+        const newRecord = this.storage.find((el) => el.id === id);
+
+        if (newRecord) {
+          resolve(newRecord);
+        } else {
+          reject();
+        }
       }
     });
   }
