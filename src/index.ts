@@ -1,17 +1,8 @@
 import "dotenv/config";
 import http from "http";
+import requestListener from "./request-listener";
 
-const server = http.createServer((req, res) => {
-  const { method } = req;
-  const baseURL = `http://${req.headers.host}/`;
-
-  res.end(
-    JSON.stringify({
-      success: true,
-      message: `The method is ${method}, base url is ${baseURL}`,
-    })
-  );
-});
+const server = http.createServer(requestListener);
 
 const port = process.env.PORT || 4000;
 
