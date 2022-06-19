@@ -1,9 +1,11 @@
 import path from "path";
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 export default {
   entry: "./src/index.ts",
   output: {
-    filename: "main.js",
+    filename: "index.js",
     path: path.resolve(__dirname, "dist"),
   },
   target: "node",
