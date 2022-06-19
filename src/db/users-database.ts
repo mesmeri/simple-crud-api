@@ -73,6 +73,8 @@ class UsersDatabase {
           reject();
         }
       }
+
+      reject();
     });
   }
 }

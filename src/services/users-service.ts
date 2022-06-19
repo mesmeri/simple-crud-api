@@ -110,13 +110,19 @@ class UsersService {
     }
 
     try {
+      await this.repo.getById(id);
+    } catch (e) {
+      throw new AppError(
+        HTTPStatusCode.NOT_FOUND,
+        `No user with id ${id} in the database`
+      );
+    }
+
+    try {
       const record = this.repo.updateUser(id, user);
       return record;
     } catch {
-      throw new AppError(
-        HTTPStatusCode.NOT_FOUND,
-        `Unable to update, no user with id ${id} in the database`
-      );
+      throw new AppError(HTTPStatusCode.INTERNAL_SERVER, `Unable to update`);
     }
   }
 
