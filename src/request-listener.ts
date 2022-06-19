@@ -1,5 +1,4 @@
 import { IncomingMessage, ServerResponse } from "http";
-import AppError from "./errors/app-error";
 import UsersService from "./services/users-service";
 import { HTTPMethod, HTTPStatusCode } from "./types";
 
@@ -12,10 +11,15 @@ const requestListener = async (req: IncomingMessage, res: ServerResponse) => {
   const splittedPath = pathname.split("/");
   const [apiPath, model, modelId] = splittedPath.filter((el) => el);
 
-  if (!method && apiPath !== "api" && model !== "users") {
-    res.statusCode === HTTPStatusCode.NOT_FOUND;
-    res.statusMessage === "This path or HTTP method is not supported";
-    res.end();
+  if (!method || apiPath !== "api" || model !== "users") {
+    res.writeHead(HTTPStatusCode.NOT_FOUND);
+    res.end(
+      JSON.stringify({
+        success: false,
+        message: "This path or HTTP method is not supported",
+      })
+    );
+    return;
   }
 
   res.setHeader("Content-Type", "application/json");
@@ -96,7 +100,7 @@ const requestListener = async (req: IncomingMessage, res: ServerResponse) => {
         });
         break;
       }
-      case "DELETE": {
+      case HTTPMethod.DELETE: {
         try {
           await usersService.remove(modelId);
 
